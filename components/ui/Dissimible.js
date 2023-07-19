@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/Ionicons';  // Choose the appropriat
 
 
 
-const DismissibleItem = ({ item, handleDelete }) => {
+const DismissibleItem = ({ widget, handleDelete }) => {
     const renderRightActions = (progress, dragX) => {
         const trans = dragX.interpolate({
             inputRange: [0, 50, 100],
@@ -48,7 +48,8 @@ const DismissibleItem = ({ item, handleDelete }) => {
         >
 
             <View style={stylesx.listItem}>
-                <Text style={stylesx.listItemText}> {item.email}</Text>
+                {/* <Text style={stylesx.listItemText}> {item.email}</Text> */}
+                {widget}
                 {/* <Text style={stylesx.listItemText}>{item.body}</Text> */}
             </View>
         </Swipeable>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, Button, Text, View, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
+import { Image, Button, Text, View, StyleSheet, ActivityIndicator, FlatList, Pressable, ScrollView } from 'react-native';
 import IconButton from '../components/ui/IconButton';
 import DismissibleItem from '../components/ui/Dissimible';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -40,8 +40,10 @@ function NotificationScreen() {
     }, []);
 
     const handleDelete = (id) => {
-        // Handle delete action
+        // const updatedPosts = posts.filter(post => post.id !== id);
+        // setPosts(updatedPosts);
     };
+
 
     const generateRandomNames = (count) => {
         const names = ['Alice', 'Bob', 'Charlie', 'David', 'Emma', 'Frank', 'Grace', 'Henry', 'Ivy', 'Jack'];
@@ -62,7 +64,8 @@ function NotificationScreen() {
                 name: names[i],
                 age: Math.floor(Math.random() * 50) + 18,
                 email: `${names[i].toLowerCase()}@example.com`,
-                image: "https://picsum.photos/200/300"
+                image: "https://picsum.photos/200/300?random=" + i.toString(),
+                date: new Date().toISOString(),
             };
             fakeUsers.push(fakeUser);
         }
@@ -78,29 +81,49 @@ function NotificationScreen() {
     }
 
     return (
-        <View style={styles.rootContainer}>
-            <Text style={styles.title}>Today</Text>
+        <ScrollView>
+            <View style={styles.rootColumn}>
+                <View style={styles.rootContainer}>
+                    <Text style={styles.title}>Today</Text>
+                    <FlatList
+                        data={generateFakeUsers(3)}
+                        keyExtractor={(item) => item.id.toString()}
+                        renderItem={({ item }) => (
+                            console.log(item.name),
+                            <GestureHandlerRootView key={item.id} style={{ flex: 1 }}>
+                                <DismissibleItem widget={CardView(item)} handleDelete={() => handleDelete(item.id)} />
+                            </GestureHandlerRootView>
+                        )}
+                    />
+                </View>
+                <View style={styles.rootContainer}>
+                    <Text style={styles.title}>Yesterday</Text>
+                    <FlatList
+                        data={generateFakeUsers(2)}
+                        keyExtractor={(item) => item.id.toString()}
+                        renderItem={({ item }) => (
+                            console.log(item.name),
+                            <GestureHandlerRootView key={item.id} style={{ flex: 1 }}>
+                                <View style={styles.listContainer}>
+                                    <View style={styles.listItemContainer}>
+                                        <Pressable onPress={() => { console.log(item.name); }}><Image source={{ uri: item.image }} style={styles.avatar} /></Pressable>
 
-            <FlatList
-                data={generateFakeUsers(2)}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                    console.log(item.name),
-                    <GestureHandlerRootView key={item.id} style={{ flex: 1 }}>
-                        <View style={styles.listContainer}>
-                            <View style={styles.listItemContainer}>
-                                <Image source={{ uri: item.image }} style={styles.avatar} />
-                                <View style={styles.textContainer}>
-                                    <Text style={styles.primaryText}>{item.name}</Text>
-                                    <Text style={styles.secondaryText}>{item.email}</Text>
+                                        <View marginLeft={8}>
+                                            <Text style={styles.primaryText}>{item.name}</Text>
+                                            <Text style={styles.secondaryText}>{item.email}</Text>
+                                            <Text style={styles.secondaryText}>{item.date}</Text>
+                                        </View>
+
+                                        <Image source={{ uri: item.image }} style={styles.avatar} />
+                                    </View>
+                                    {/* <View style={styles.divider} /> */}
                                 </View>
-                            </View>
-                            <View style={styles.divider} />
-                        </View>
-                    </GestureHandlerRootView>
-                )}
-            />
-        </View>
+                            </GestureHandlerRootView>
+                        )}
+                    />
+                </View>
+            </View>
+        </ScrollView>
     );
 }
 
@@ -116,7 +139,16 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
-        padding: 32,
+        paddingTop: 10,
+        paddingLeft: 32,
+        paddingRight: 32,
+    },
+    rootColumn: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        // padding: 32,
+        flexDirection: 'column',
     },
     title: {
         fontSize: 20,
@@ -130,18 +162,30 @@ const styles = StyleSheet.create({
     },
     listItemContainer: {
         flexDirection: 'row',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         padding: 16,
+        borderRadius: 8,
+        backgroundColor: 'white',
+        width: 350,
+        elevation: 2, // Add elevation for shadow effect (Android)
+        shadowColor: '#000000', // Add shadow color (iOS)
+        shadowOffset: { width: 5, height: 5 }, // Add shadow offset (iOS)
+        shadowOpacity: 0.45, // Add shadow opacity (iOS)
+        shadowRadius: 8, // Add shadow radius (iOS)
     },
     avatar: {
         width: 40,
         height: 40,
         borderRadius: 20,
+        margin: 5
     },
-    textContainer: {
-        marginLeft: 16,
-        flex: 1,
+    cardContent: {
+        marginLeft: 8,
     },
+    // textContainer: {
+    //     marginLeft: 16,
+    //     flex: 1,
+    // },
     primaryText: {
         fontSize: 16,
         fontWeight: 'bold',
@@ -157,3 +201,19 @@ const styles = StyleSheet.create({
         marginLeft: 64,
     },
 });
+function CardView(item) {
+    return <View style={styles.listContainer}>
+        <Pressable onPress={() => { console.log(item.name); }} style={styles.listItemContainer}>
+            <Image source={{ uri: item.image }} style={styles.avatar} />
+            <View style={styles.cardContent}>
+                <Text style={styles.primaryText}>{item.name}</Text>
+                <Text style={styles.secondaryText}>{item.email}</Text>
+                <Text style={styles.secondaryText}>{item.date}</Text>
+            </View>
+            <Image source={{ uri: item.image }} style={styles.avatar} />
+            <Image source={{ uri: item.image }} style={styles.avatar} />
+        </Pressable>
+        {/* <View style={styles.divider} /> */}
+    </View>;
+}
+
