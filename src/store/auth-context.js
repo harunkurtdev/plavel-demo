@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { createContext, useEffect, useState } from 'react';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export const AuthContext = createContext({
   token: '',
@@ -21,7 +22,7 @@ function AuthContextProvider({ children }) {
     setAuthToken(null);
     AsyncStorage.removeItem('token');
   }
-
+  
   const value = {
     token: authToken,
     isAuthenticated: !!authToken,

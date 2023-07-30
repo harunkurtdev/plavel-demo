@@ -6,5 +6,7 @@ export const Colors = {
   error100: '#fcdcbf',
   error500: '#f37c13',
   frontContainer: '#EEE6E6',
-  button:'#679067'
+  button: '#679067',
+  white: "white",
+  black: "black"
 }
